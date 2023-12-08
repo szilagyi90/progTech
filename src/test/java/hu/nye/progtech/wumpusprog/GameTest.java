@@ -1,17 +1,24 @@
 package hu.nye.progtech.wumpusprog;
 
+import hu.nye.progtech.wumpusprog.game.Game;
 import org.junit.jupiter.api.BeforeEach;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
 
     private Game underTest;
 
     @BeforeEach
-    void inputName() { underTest = new Game(); }
+    void setUp() {
+        underTest = new Game();
+    }
 
-    public void testInputNameToShouldNot(){}
+    public void testInputNameToShouldNot(){
+        //given
+
+        //when
+
+        //then
+    }
 
     @org.junit.jupiter.api.Test
     void menu() {

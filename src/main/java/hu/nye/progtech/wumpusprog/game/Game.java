@@ -1,28 +1,58 @@
-package hu.nye.progtech.wumpusprog;
+
+/**
+ * .
+ * wumpuszprog
+ */
+
+package hu.nye.progtech.wumpusprog.game;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Scanner;
 
-enum Orientation {
-    East,
-    West,
-    South,
-    North
-}
+/**.
+ * Játék
+ */
 
 public class Game {
-    String username;
-    int arrows = 0;
-    int startX;
-    int startY;
-    int heroX;
-    int heroY;
-    Orientation o;
-    boolean hasGold = false;
-
-    char[][] map;
+    /**.
+     * felhasználónév
+     **/
+    private String username;
+    /**.
+     * nyilak
+     * */
+    private int arrows = 0;
+    /**.
+     * hős kezdőhelye
+     * */
+    private int startX;
+    /**.
+     * hős kezdőhelye
+     * */
+    private int startY;
+    /**.
+     * hős jelenlegi helye
+     * */
+    private int heroX;
+    /**.
+     * hős jelenlegi helye
+     * */
+    private int heroY;
+    /**.
+     * hős iránya
+     * */
+    private Orientation lookDir;
+    /**.
+     * hős birtokolja-e az aranyat
+     * */
+    private boolean hasGold = false;
+    /**.
+     * pálya
+     * */
+    private char[][] map;
     Scanner scanner = new Scanner(System.in);
+
     public void inputName() throws Exception {
         System.out.println("Adjon meg egy felhasználónevet!");
         username = scanner.nextLine();
@@ -30,10 +60,11 @@ public class Game {
         menu();
     }
 
+    /**.
+     * Menü
+     */
     public void menu() throws Exception {
-
-
-        while(true){
+        while (true) {
             System.out.println("Menü:");
             System.out.println("1. Pályaszerkesztés");
             System.out.println("2. Fájlból beolvasás");
@@ -44,21 +75,23 @@ public class Game {
 
             int menupoint = scanner.nextInt();
 
-            switch (menupoint){
+            switch (menupoint) {
                 case 1:
                     System.out.println("Csak a fájlból beolvasást implementáltam");
                     break;
                 case 2:
-                   parse();
+                    parse();
                     break;
                 case 3:
                     //  loading();
+                    System.out.println("Még nem sikerült implementálnom");
                     break;
                 case 4:
                     //             saving();
+                    System.out.println("Még nem sikerült implementálnom");
                     break;
                 case 5:
-                   play();
+                    play();
                     break;
                 case 6:
                     System.out.println("Kilépés a játékból");
@@ -72,41 +105,41 @@ public class Game {
 
 
     }
+
     private void drawBoard() {
-        for (int i = 0; i < map.length; i++){
-            for (int j=0; j< map.length; j++){
-                if (i == heroX && j == heroY){
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map.length; j++) {
+                if (i == heroX && j == heroY) {
                     System.out.print('H');
-                }
-                else{
+                } else {
                     System.out.print(map[i][j]);
                 }
             }
             System.out.println();
         }
-        System.out.println("A hős helyzete: " + heroX + ", " + heroY);
-        System.out.println("A hős iránya: " + o);
+        System.out.println("A hős helyzete: " + (heroX + 1) + ", " + (heroY + 1));
+        System.out.println("A hős iránya: " + lookDir);
         System.out.println("Nyilak száma: " + arrows);
         System.out.println("Nálunk van-e az arany: " + hasGold);
     }
 
     private void left() {
-        switch (o) {
-            case North -> o = Orientation.West;
-            case West -> o = Orientation.South;
-            case South -> o = Orientation.East;
-            case East -> o = Orientation.North;
+        switch (lookDir) {
+            case North -> lookDir = Orientation.West;
+            case West -> lookDir = Orientation.South;
+            case South -> lookDir = Orientation.East;
+            case East -> lookDir = Orientation.North;
         }
 
 
     }
 
     private void right() {
-        switch (o) {
-            case North -> o = Orientation.East;
-            case West -> o = Orientation.North;
-            case South -> o = Orientation.West;
-            case East -> o = Orientation.South;
+        switch (lookDir) {
+            case North -> lookDir = Orientation.East;
+            case West -> lookDir = Orientation.North;
+            case South -> lookDir = Orientation.West;
+            case East -> lookDir = Orientation.South;
         }
     }
 
@@ -117,7 +150,7 @@ public class Game {
     private boolean forward() throws Exception {
         int newX = heroX;
         int newY = heroY;
-        switch (o) {
+        switch (lookDir) {
             case North:
                 newX--;
                 break;
@@ -129,44 +162,50 @@ public class Game {
                 break;
             case East:
                 newY++;
+                break;
+            default:
+                System.out.println("Nem megfelelő input");
         }
         char value = map[newX][newY];
-        System.out.println(value);
-        switch (value){
-            case 'W' :
+        switch (value) {
+            case 'W':
                 System.out.println("Nem léphetsz falra");
                 break;
-            case 'U' :
+            case 'U':
                 System.out.println("Vesztettél");
                 heroX = newX;
                 heroY = newY;
                 menu();
                 break;
-            case '_' :
+            case '_':
                 heroX = newX;
                 heroY = newY;
                 break;
-            case 'G' :
+            case 'G':
                 heroX = newX;
                 heroY = newY;
                 System.out.println("Felvetted az aranyat");
                 hasGold = true;
                 map[heroX][heroY] = '_';
                 break;
-            case 'P' :
+            case 'P':
                 heroX = newX;
                 heroY = newY;
                 System.out.println("Verembe léptél, elvesztettél egy nyílvesszőt");
-                if (arrows > 0)
+                if (arrows > 0) {
                     arrows--;
+                }
                 break;
-            case 'K' :
+            case 'K':
                 heroX = newX;
                 heroY = newY;
-                if (hasGold == true){
+                if (hasGold = true) {
                     System.out.println("Végig vitted a játékot");
-                    menu();}
+                    menu();
+                }
                 break;
+            default:
+                System.out.println("Nem megfelelő input");
         }
 
         return true;
@@ -175,13 +214,12 @@ public class Game {
     private void shoot() {
         if (arrows == 0) {
             System.out.println("Nincsen több nyilvessződ");
-        }
-        else{
+        } else {
             arrows--;
             int arrowX = heroX;
             int arrowY = heroY;
-            while(true) {
-                switch (o) {
+            while (true) {
+                switch (lookDir) {
                     case North:
                         arrowX--;
                         break;
@@ -194,16 +232,17 @@ public class Game {
                     case East:
                         arrowY++;
                         break;
+                    default:
+                        System.out.println("Nem megfelelő input");
                 }
-              if(map[arrowX][arrowY] == 'W'){
-                  System.out.println("Falat találtál el");
-                  break;
-              }
-              else if(map[arrowX][arrowY] == 'U'){
-                  System.out.println("Wumpuszt találtál el");
-                  map[arrowX][arrowY] = '_';
-                  break;
-              }
+                if (map[arrowX][arrowY] == 'W') {
+                    System.out.println("Falat találtál el");
+                    break;
+                } else if (map[arrowX][arrowY] == 'U') {
+                    System.out.println("Wumpuszt találtál el");
+                    map[arrowX][arrowY] = '_';
+                    break;
+                }
             }
         }
     }
@@ -217,13 +256,12 @@ public class Game {
             System.out.println(c);
 
             switch (c) {
-                // turn left
                 case 'l':
                     left();
                     break;
                 // turn right
                 case 'r':
-                   right();
+                    right();
                     break;
                 // move forward
                 case 'f':
@@ -234,6 +272,7 @@ public class Game {
                     shoot();
                     break;
                 case 'c':
+                    System.out.println("Visszalépés a menübe");
                     menu();
                     break;
                 default:
@@ -243,37 +282,46 @@ public class Game {
         }
     }
 
-
     private void parse() throws Exception {
-        BufferedReader br = new BufferedReader(new FileReader("D:\\Sulihoz\\Java project\\Progtech\\Wumpus beadando\\Wumpus prog\\src\\main\\resources\\map\\wumpuszinput.txt"));
+
+        BufferedReader br = new BufferedReader(new FileReader(
+                "D:\\Sulihoz\\Java project\\Progtech\\Wumpus beadando\\Wumpus prog\\src\\main\\resources\\map\\wumpuszinput.txt"));
         String[] parts = br.readLine().split("\\s");
 
         int dim = Integer.parseInt(parts[0]);
         map = new char[dim][dim];
 
-        startY = ((int)'A'  - (int)parts[1].charAt(0)) * -1;
+        startY = ((int) 'A' - (int) parts[1].charAt(0)) * -1;
         startX = Integer.parseInt(parts[2]) - 1;
         heroX = startX;
         heroY = startY;
 
         switch (parts[3].charAt(0)) {
-            case 'E': o = Orientation.East;
+            case 'E':
+                lookDir = Orientation.East;
                 break;
-            case 'W': o = Orientation.West;
+            case 'W':
+                lookDir = Orientation.West;
                 break;
-            case 'S': o = Orientation.South;
+            case 'S':
+                lookDir = Orientation.South;
                 break;
-            case 'N': o = Orientation.North;
+            case 'N':
+                lookDir = Orientation.North;
                 break;
+            default:
+                System.out.println("Nem megfelelő input");
         }
 
-        for (int i= 0; i < dim; i++) {
+        for (int i = 0; i < dim; i++) {
             String line = br.readLine();
             map[i] = line.toCharArray();
 
-            for (int j = 0; j < dim; j++)
-                if (map[i][j] == 'U')
+            for (int j = 0; j < dim; j++) {
+                if (map[i][j] == 'U') {
                     arrows++;
+                }
+            }
         }
         map[startX][startY] = 'K';
     }
